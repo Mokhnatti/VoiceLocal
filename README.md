@@ -15,6 +15,10 @@ Push-to-talk голосовой ввод текста на локальном Wh
 
 Скачать с [python.org](https://python.org). При установке отметить **"Add Python to PATH"**.
 
+### 1.5. Установить CUDA (опционально, для NVIDIA GPU)
+
+Если есть видеокарта NVIDIA — поставь [CUDA Toolkit 12.x](https://developer.nvidia.com/cuda-downloads). Распознавание будет в 5–10 раз быстрее. Без CUDA работает на CPU.
+
 ### 2. Установить зависимости
 
 ```
