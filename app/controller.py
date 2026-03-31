@@ -5,12 +5,40 @@
   hold   — зажал = запись, отпустил = стоп
 """
 
+import os
+import sys
 import threading
 from app.recorder import AudioRecorder
 from app.transcriber import TranscriptionEngine
 from app.hotkey import HotkeyListener
 from app.inserter import insert_text
 from app.config import get_config
+
+if getattr(sys, 'frozen', False):
+    _APP_DIR = os.path.dirname(sys.executable)
+else:
+    _APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+BEEP_START = os.path.join(_APP_DIR, "beep_start.wav")
+BEEP_STOP  = os.path.join(_APP_DIR, "beep_stop.wav")
+
+
+def _play_beep(path: str):
+    if not os.path.exists(path):
+        return
+    try:
+        import wave as _wave, pyaudio as _pa
+        wf = _wave.open(path, 'rb')
+        p = _pa.PyAudio()
+        s = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                   channels=wf.getnchannels(), rate=wf.getframerate(), output=True)
+        data = wf.readframes(4096)
+        while data:
+            s.write(data)
+            data = wf.readframes(4096)
+        s.stop_stream(); s.close(); p.terminate(); wf.close()
+    except Exception:
+        pass
 
 
 class PTTController:
@@ -102,9 +130,11 @@ class PTTController:
         self._recorder.start_recording()
         self._set_state("recording")
         self._start_duration_timer()
+        threading.Thread(target=_play_beep, args=(BEEP_START,), daemon=True).start()
 
     def _stop_recording(self):
         self._stop_duration_timer()
+        threading.Thread(target=_play_beep, args=(BEEP_STOP,), daemon=True).start()
         audio = self._recorder.stop_recording()
         self._set_state("processing")
 
