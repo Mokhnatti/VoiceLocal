@@ -21,6 +21,7 @@ DEFAULTS = {
     "ptt_mode": "toggle",       # "toggle" (нажал-нажал) или "hold" (держи-отпусти)
     "ring_buffer_sec": 1.5,     # захват до нажатия (сек)
     "device_index": None,       # None = системный микрофон
+    "mute_others": False,       # мутить другие микрофоны при записи
 
     # Распознавание
     "model": "large-v3-turbo",  # whisper модель

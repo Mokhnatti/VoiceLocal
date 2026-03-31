@@ -17,3 +17,6 @@ pyautogui>=0.9.54
 
 # UI
 PyQt6>=6.6.0
+
+# Мут микрофонов (Windows Audio API, опционально)
+pycaw>=20240210

@@ -158,6 +158,19 @@ class SettingsDialog(QDialog):
             if d["index"] == cur_dev:
                 self._mic_combo.setCurrentIndex(self._mic_combo.count() - 1)
         g.addWidget(self._mic_combo)
+
+        self._chk_mute = QCheckBox("Мутить другие микрофоны во время записи")
+        self._chk_mute.setChecked(self._cfg.get("mute_others", False))
+        from app.audio_mute import is_available as _mute_available
+        if not _mute_available():
+            self._chk_mute.setEnabled(False)
+            self._chk_mute.setToolTip("Требуется: pip install pycaw")
+        else:
+            self._chk_mute.setToolTip(
+                "При нажатии хоткея — все микрофоны кроме выбранного замолкают.\n"
+                "При отпускании и при перезапуске — возвращаются обратно."
+            )
+        g.addWidget(self._chk_mute)
         layout.addWidget(grp_mic)
 
         # ── Текст и пунктуация ──
@@ -242,6 +255,7 @@ class SettingsDialog(QDialog):
         self._cfg.set("capitalize_sentences", self._chk_cap.isChecked())
         self._cfg.set("insert_space", self._chk_space.isChecked())
         self._cfg.set("auto_enter", self._chk_enter.isChecked())
+        self._cfg.set("mute_others", self._chk_mute.isChecked())
 
         if self._model_combo.currentData() != old_model or self._chk_cuda.isChecked() != self._cfg.get("use_cuda"):
             self._controller.reload_model()

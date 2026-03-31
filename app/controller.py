@@ -13,6 +13,7 @@ from app.transcriber import TranscriptionEngine
 from app.hotkey import HotkeyListener
 from app.inserter import insert_text
 from app.config import get_config
+from app import audio_mute
 
 if getattr(sys, 'frozen', False):
     _APP_DIR = os.path.dirname(sys.executable)
@@ -75,6 +76,7 @@ class PTTController:
 
     def start(self):
         self.on_model_loading()
+        audio_mute.unmute_all_force()  # размутить всё при запуске
         self._engine.load_async()
         self._recorder.start_background()
         self._hotkey.start()
@@ -83,6 +85,7 @@ class PTTController:
         self._hotkey.stop()
         self._stop_duration_timer()
         self._recorder.stop_background()
+        audio_mute.unmute_all_force()  # размутить всё при выходе
         self._set_state("idle")
 
     def _model_ready(self):
@@ -127,6 +130,13 @@ class PTTController:
             self._stop_recording()
 
     def _start_recording(self):
+        cfg = get_config()
+        if cfg.get("mute_others", False):
+            threading.Thread(
+                target=audio_mute.mute_others,
+                args=(cfg.get("device_index"),),
+                daemon=True
+            ).start()
         self._recorder.start_recording()
         self._set_state("recording")
         self._start_duration_timer()
@@ -136,6 +146,9 @@ class PTTController:
         self._stop_duration_timer()
         threading.Thread(target=_play_beep, args=(BEEP_STOP,), daemon=True).start()
         audio = self._recorder.stop_recording()
+        cfg = get_config()
+        if cfg.get("mute_others", False):
+            threading.Thread(target=audio_mute.unmute_all, daemon=True).start()
         self._set_state("processing")
 
         if audio is None or len(audio) < SAMPLE_RATE * 0.1:
