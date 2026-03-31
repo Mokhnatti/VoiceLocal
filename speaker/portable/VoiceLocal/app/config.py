@@ -37,6 +37,10 @@ DEFAULTS = {
     "auto_enter": False,            # Enter после вставки
     "strip_punctuation": True,      # убирать точки/запятые (наш дефолт)
 
+    # Перевод
+    "translate_enabled": False,   # переводить после транскрипции
+    "translate_to": "en",         # целевой язык перевода
+
     # Прочее
     "post_delay_ms": 150,
     "theme": "dark",

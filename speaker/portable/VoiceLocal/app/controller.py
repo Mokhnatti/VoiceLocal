@@ -14,6 +14,7 @@ from app.hotkey import HotkeyListener
 from app.inserter import insert_text
 from app.config import get_config
 from app import audio_mute
+from app.translator import translate
 
 if getattr(sys, 'frozen', False):
     _APP_DIR = os.path.dirname(sys.executable)
@@ -154,6 +155,9 @@ class PTTController:
         try:
             text = self._engine.transcribe(audio_np)
             if text:
+                cfg = get_config()
+                if cfg.get("translate_enabled", False):
+                    text = translate(text, target_lang=cfg.get("translate_to", "en"))
                 self.on_text(text)
                 insert_text(text)
         except Exception as e:

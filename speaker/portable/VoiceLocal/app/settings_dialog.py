@@ -63,6 +63,23 @@ PTT_MODES = [
     ("hold",   "Hold — держи = запись, отпустил = стоп"),
 ]
 
+TRANSLATE_LANG_OPTIONS = [
+    ("en", "English"),
+    ("ru", "Русский"),
+    ("zh", "中文 (Китайский)"),
+    ("de", "Deutsch"),
+    ("fr", "Français"),
+    ("es", "Español"),
+    ("ja", "日本語"),
+    ("ko", "한국어"),
+    ("uk", "Українська"),
+    ("tr", "Türkçe"),
+    ("ar", "العربية"),
+    ("it", "Italiano"),
+    ("pt", "Português"),
+    ("pl", "Polski"),
+]
+
 
 def _detect_python_mode() -> str:
     if getattr(sys, 'frozen', False):
@@ -198,6 +215,26 @@ class SettingsDialog(QDialog):
             g.addWidget(w)
         layout.addWidget(grp_text)
 
+        # ── Перевод ──
+        grp_tr = self._group("Перевод (Google Translate)")
+        g = QVBoxLayout(grp_tr)
+        self._chk_translate = QCheckBox("Переводить текст после распознавания")
+        self._chk_translate.setChecked(self._cfg.get("translate_enabled", False))
+        g.addWidget(self._chk_translate)
+        self._tr_lang_combo = NoScrollComboBox()
+        cur_tr = self._cfg.get("translate_to", "en")
+        for val, label in TRANSLATE_LANG_OPTIONS:
+            self._tr_lang_combo.addItem(label, val)
+            if val == cur_tr:
+                self._tr_lang_combo.setCurrentIndex(self._tr_lang_combo.count() - 1)
+        g.addWidget(QLabel("Переводить на:"))
+        g.addWidget(self._tr_lang_combo)
+        note_tr = QLabel("Требуется интернет. Используется бесплатный Google Translate.")
+        note_tr.setObjectName("noteLabel")
+        note_tr.setWordWrap(True)
+        g.addWidget(note_tr)
+        layout.addWidget(grp_tr)
+
         # ── Python ──
         grp_py = self._group("Python")
         g = QVBoxLayout(grp_py)
@@ -264,6 +301,8 @@ class SettingsDialog(QDialog):
         self._cfg.set("insert_space", self._chk_space.isChecked())
         self._cfg.set("auto_enter", self._chk_enter.isChecked())
         self._cfg.set("mute_others", self._chk_mute.isChecked())
+        self._cfg.set("translate_enabled", self._chk_translate.isChecked())
+        self._cfg.set("translate_to", self._tr_lang_combo.currentData())
 
         if self._model_combo.currentData() != old_model or self._chk_cuda.isChecked() != self._cfg.get("use_cuda"):
             self._controller.reload_model()
