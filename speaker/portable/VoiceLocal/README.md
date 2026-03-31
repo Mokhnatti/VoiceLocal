@@ -3,7 +3,23 @@
 Push-to-talk голосовой ввод текста на локальном Whisper.
 Работает **полностью офлайн**, без облаков. Windows 10/11.
 
-> Совместная разработка: Рамиль Мохнатти + Максим Гурский
+> Совместная разработка: [Рамиль Мохнатти](https://github.com/Mokhnatti) + [Maxim Gurskii](https://github.com/mmxm162)
+
+## Авторство
+
+| Компонент | Автор |
+|-----------|-------|
+| PyQt6 интерфейс (тёмная тема, окно, трей) | [@mmxm162](https://github.com/mmxm162) |
+| Hold режим (зажал = запись, отпустил = стоп) | [@mmxm162](https://github.com/mmxm162) |
+| Toggle режим PTT | [@mmxm162](https://github.com/mmxm162) |
+| Голосовые команды ("точка", "запятая"...) | [@mmxm162](https://github.com/mmxm162) |
+| sounddevice для записи аудио | [@mmxm162](https://github.com/mmxm162) |
+| Ring buffer (1.5 сек до нажатия) | [@Mokhnatti](https://github.com/Mokhnatti) |
+| Портативный Python (папка python/) | [@Mokhnatti](https://github.com/Mokhnatti) |
+| CUDA поддержка (папка cuda/) | [@Mokhnatti](https://github.com/Mokhnatti) |
+| Мут других микрофонов во время записи | [@Mokhnatti](https://github.com/Mokhnatti) |
+| Кнопка "Копировать" последнего результата | [@Mokhnatti](https://github.com/Mokhnatti) |
+| Кнопка перезапуска в заголовке | [@Mokhnatti](https://github.com/Mokhnatti) |
 
 ---
 
