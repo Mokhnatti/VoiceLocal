@@ -95,6 +95,22 @@ python main.py
 
 ---
 
+## CUDA (GPU ускорение)
+
+Папка `cuda/` **не включена** в репозиторий (слишком большая). Без неё работает на CPU.
+
+Чтобы добавить CUDA:
+1. Скачай [CUDA Toolkit 12.x](https://developer.nvidia.com/cuda-downloads) от NVIDIA
+2. Или скопируй из существующей установки нужные DLL в папку `cuda/`:
+   - `cublas64_12.dll`, `cublasLt64_12.dll`
+   - `cudart64_12.dll`
+   - `cudnn_ops_infer64_8.dll` и др.
+3. VoiceLocal автоматически подхватит их при запуске
+
+> Если NVIDIA карты нет — папка `cuda/` не нужна, программа сама переключится на CPU.
+
+---
+
 ## Автозапуск
 
 `Win + R` → `shell:startup` → создай ярлык на `VoiceLocal.bat`
