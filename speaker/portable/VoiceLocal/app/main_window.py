@@ -12,6 +12,7 @@ from PyQt6.QtGui import QColor, QPainter, QBrush
 
 from app.controller import PTTController
 from app.config import get_config
+from app.i18n import tr
 
 DARK_BG  = "#0f0f12"
 SURFACE  = "#1a1a22"
@@ -118,9 +119,9 @@ class MainWindow(QMainWindow):
         tb_layout.addStretch()
 
         for txt, name, tip, slot in [
-            ("⚙", "titleBarBtn", "Настройки", self._open_settings),
-            ("↻", "titleBarBtn", "Перезапустить", self._restart),
-            ("✕", "closeBtn", "Скрыть в трей", self.hide),
+            ("⚙", "titleBarBtn", tr("tip_settings"), self._open_settings),
+            ("↻", "titleBarBtn", tr("tip_restart"), self._restart),
+            ("✕", "closeBtn", tr("tip_hide"), self.hide),
         ]:
             btn = QPushButton(txt)
             btn.setObjectName(name)
@@ -148,7 +149,7 @@ class MainWindow(QMainWindow):
         self._indicator = RecordIndicator()
         status_row.addWidget(self._indicator)
         status_row.addSpacing(10)
-        self._lbl_status = QLabel("Загрузка модели...")
+        self._lbl_status = QLabel(tr("loading_model"))
         self._lbl_status.setObjectName("statusLabel")
         status_row.addWidget(self._lbl_status)
         status_row.addStretch()
@@ -168,11 +169,11 @@ class MainWindow(QMainWindow):
         cl.addWidget(sep2)
 
         last_header = QHBoxLayout()
-        lbl_last = QLabel("ПОСЛЕДНИЙ РЕЗУЛЬТАТ")
+        lbl_last = QLabel(tr("last_result"))
         lbl_last.setObjectName("sectionTitle")
         last_header.addWidget(lbl_last)
         last_header.addStretch()
-        self._btn_copy = QPushButton("⎘ Копировать")
+        self._btn_copy = QPushButton(tr("copy"))
         self._btn_copy.setObjectName("copyBtn")
         self._btn_copy.setFixedHeight(22)
         self._btn_copy.clicked.connect(self._copy_last)
@@ -200,8 +201,8 @@ class MainWindow(QMainWindow):
         hk = self._cfg.get("hotkey", "scroll_lock").replace("_", " ").upper()
         mode = self._cfg.get("ptt_mode", "toggle")
         if mode == "hold":
-            return f"Зажмите  [{hk}]  чтобы говорить"
-        return f"Нажмите  [{hk}]  для записи, ещё раз — стоп"
+            return tr("hint_hold", hk=hk)
+        return tr("hint_toggle", hk=hk)
 
     def _connect_signals(self):
         self.sig_state.connect(self._on_state)
@@ -227,15 +228,15 @@ class MainWindow(QMainWindow):
         if self._tray:
             self._tray.set_state(state)
         if state == "recording":
-            self._lbl_status.setText("● Запись...")
+            self._lbl_status.setText(tr("recording"))
             self._lbl_status.setStyleSheet(f"color: {RED};")
             self._lbl_error.hide()
         elif state == "processing":
-            self._lbl_status.setText("◌ Распознавание...")
+            self._lbl_status.setText(tr("recognizing"))
             self._lbl_status.setStyleSheet("color: #ddbb44;")
             self._lbl_duration.setText("")
         elif state == "idle":
-            self._lbl_status.setText("Готов")
+            self._lbl_status.setText(tr("ready"))
             self._lbl_status.setStyleSheet(f"color: {TEXT_DIM};")
             self._lbl_duration.setText("")
 
@@ -248,8 +249,8 @@ class MainWindow(QMainWindow):
         text = self._lbl_last.text()
         if text and text != "—":
             pyperclip.copy(text)
-            self._btn_copy.setText("✓ Скопировано")
-            QTimer.singleShot(1500, lambda: self._btn_copy.setText("⎘ Копировать"))
+            self._btn_copy.setText(tr("copied"))
+            QTimer.singleShot(1500, lambda: self._btn_copy.setText(tr("copy")))
 
     def _on_error(self, msg: str):
         self._lbl_error.setText(f"⚠ {msg}")
@@ -258,7 +259,7 @@ class MainWindow(QMainWindow):
 
     def _on_model_ready(self):
         self._indicator.set_state("idle")
-        self._lbl_status.setText("Готов")
+        self._lbl_status.setText(tr("ready"))
         self._lbl_status.setStyleSheet(f"color: {GREEN};")
         self._lbl_hotkey.setText(self._hotkey_hint())
         QTimer.singleShot(2000, lambda: self._lbl_status.setStyleSheet(f"color: {TEXT_DIM};"))
@@ -266,7 +267,7 @@ class MainWindow(QMainWindow):
     def _on_model_loading(self):
         self._indicator.set_state("loading")
         model = self._cfg.get("model", "large-v3-turbo")
-        self._lbl_status.setText(f"Загрузка модели {model}...")
+        self._lbl_status.setText(tr("loading_model_named", model=model))
         self._lbl_status.setStyleSheet("color: #5588dd;")
 
     def _on_duration(self, sec: float):

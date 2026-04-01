@@ -44,6 +44,7 @@ DEFAULTS = {
     # Прочее
     "post_delay_ms": 150,
     "theme": "dark",
+    "ui_lang": "ru",
 }
 
 # Голосовые команды → символы
